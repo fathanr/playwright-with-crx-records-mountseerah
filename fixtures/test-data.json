@@ -1,0 +1,34 @@
+{
+  "auth": {
+    "validUser": {
+      "email": "admin@dot.co.id",
+      "password": "rahasia123!"
+    },
+    "invalidUser": {
+      "email": "invalid@example.com",
+      "password": "wrongpass"
+    }
+  },
+  "masterData": {
+    "entity": {
+      "valid": {
+        "entity": "PAMA",
+        "district": "KPP 2",
+        "description": "Test entity district"
+      },
+      "invalid": {
+        "entity": "",
+        "district": "",
+        "description": ""
+      }
+    },
+    "description": {
+      "parent": {
+        "description": "Parent Description Test"
+      },
+      "child": {
+        "description": "Child Description Test"
+      }
+    }
+  }
+}
