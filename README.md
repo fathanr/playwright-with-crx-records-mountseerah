@@ -21,6 +21,7 @@ Before you begin, ensure you have the following installed:
 - **Git** - For cloning the repository
 
 Verify your installation:
+
 ```bash
 node --version  # Should be v20.x.x or higher
 npm --version
@@ -29,17 +30,20 @@ npm --version
 ## Installation
 
 1. Clone the repository:
+
 ```bash
 git clone <repository-url>
 cd crx-playwright-with-ai
 ```
 
 2. Install dependencies:
+
 ```bash
 npm install
 ```
 
 3. Install Playwright browsers:
+
 ```bash
 npm run setup
 ```
@@ -47,19 +51,21 @@ npm run setup
 ## Environment Setup
 
 1. Copy the example environment file:
+
 ```bash
 cp .env.example .env
 ```
 
 2. Configure your environment variables in `.env`:
 
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `USER_EMAIL` | Your login email credential | `admin@dot.co.id` |
-| `USER_PASSWORD` | Your account password | `your_password` |
-| `BASE_URL` | Application base URL | `https://pamafix-dev.dot.co.id` |
+| Variable        | Description                 | Example                         |
+| --------------- | --------------------------- | ------------------------------- |
+| `USER_EMAIL`    | Your login email credential | `admin@dot.co.id`               |
+| `USER_PASSWORD` | Your account password       | `your_password`                 |
+| `BASE_URL`      | Application base URL        | `https://pamafix-dev.dot.co.id` |
 
 **Where to get credentials:**
+
 - Contact your team lead or system administrator for test account credentials
 - For production testing, use your assigned test user account
 
@@ -99,6 +105,7 @@ npm run report
 ```
 
 **Test execution flow:**
+
 1. Global setup authenticates (if needed)
 2. Tests run with loaded session
 3. No login steps in feature tests
@@ -134,22 +141,26 @@ records-crx/master-data/entity/create-entity.record.ts
 ### Step 3: Call AI Prompt
 
 Open your AI assistant and provide:
+
 1. The content of `docs/AI_MASTER_PROMPT.md`
 2. The recording file you just created
 
 Example prompt:
+
 ```
-Generate from: records-crx/master-data/entity/create-entity.record.ts
+read the brief in docs/AI_MASTER_PROMPT.md and Generate from: records-crx/master-data/entity/create-entity.record.tsx
 ```
 
 ### Step 4: Review Output
 
 AI generates three files:
+
 - **Page Object** - `pages/<feature-path>/<Feature>.page.ts`
 - **Test Spec** - `tests/smoke/<feature-path>/<action>.spec.ts`
 - **Selector Suggestions** - Recommendations for data-testid improvements
 
 **Review checklist (≤ 5 minutes):**
+
 - ✅ Folder structure matches recording path
 - ✅ No login logic in feature specs
 - ✅ At least 2 assertions present
@@ -164,12 +175,14 @@ npx playwright test tests/smoke/<feature-path>/<action>.spec.ts
 ### Step 6: Refine if Needed
 
 If tests fail due to selectors:
+
 1. Check selector suggestions from AI output
 2. Add recommended `data-testid` attributes to your UI components
 3. Update Page Object selectors if needed
 4. Re-run tests
 
 **Folder structure mapping:**
+
 ```
 Recording:  records-crx/master-data/entity/create-entity.record.ts
          ↓
@@ -180,17 +193,21 @@ Test Spec:   tests/smoke/master-data/entity/create-entity.spec.ts
 ## Troubleshooting
 
 ### Authentication failed
+
 **Problem:** Tests fail with login errors
 
 **Solution:**
+
 - Verify credentials in `.env` file are correct
 - Ensure `USER_EMAIL` and `USER_PASSWORD` match a valid test account
 - Check `BASE_URL` points to the correct environment
 
 ### Session expired
+
 **Problem:** "Session expired" or "Unauthorized" errors
 
 **Solution:**
+
 ```bash
 # Delete cached sessions and re-authenticate
 rm -rf .auth/
@@ -198,27 +215,33 @@ npm run smoke
 ```
 
 ### Browser not found
+
 **Problem:** "Executable doesn't exist" error
 
 **Solution:**
+
 ```bash
 # Reinstall Playwright browsers
 npm run setup
 ```
 
 ### Tests timeout
+
 **Problem:** Tests hang or timeout
 
 **Solution:**
+
 - Check `BASE_URL` in `.env` is accessible
 - Verify network connection
 - Check if application is running
 - Increase timeout in `playwright.config.ts` if needed
 
 ### AI generation failed
+
 **Problem:** AI doesn't generate correct output
 
 **Solution:**
+
 - Verify recording file format matches Playwright syntax
 - Ensure `docs/AI_MASTER_PROMPT.md` is provided to AI
 - Check recording file path follows convention: `records-crx/<path>/<file>.record.ts`
