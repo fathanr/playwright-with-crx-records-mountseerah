@@ -58,7 +58,16 @@ npm run setup
 cp .env.example .env
 ```
 
-2. Configure your environment variables in `.env`:
+2. Edit `.env` and configure your environment variables:
+
+```bash
+# Open .env in your editor
+nano .env
+# or
+code .env
+```
+
+3. Update the values:
 
 | Variable        | Description                 | Example                         |
 | --------------- | --------------------------- | ------------------------------- |
@@ -72,6 +81,7 @@ cp .env.example .env
 - Login paths are extracted from recordings (e.g., `/auth/login`)
 - Different projects need different `BASE_URL` values
 - Contact your team lead for test account credentials
+- **Never commit `.env` file** - It's gitignored for security
 
 **For different projects:**
 
