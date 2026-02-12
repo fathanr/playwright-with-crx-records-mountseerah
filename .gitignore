@@ -1,35 +1,28 @@
 # Dependencies
 node_modules/
 
-# Environment (secrets)
-.env
-.env.local
-.env.*.local
-
-# Playwright
-.auth/
+# Test results
 test-results/
 playwright-report/
 playwright/.cache/
-blob-report/
-trace/
 
-# Build / output
-dist/
-out/
-build/
-*.tsbuildinfo
+# Environment
+.env
 
-# Logs
-*.log
-npm-debug.log*
+# Auth sessions
+.auth/
 
 # OS
 .DS_Store
 Thumbs.db
 
 # IDE
+.vscode/
 .idea/
 *.swp
 *.swo
 *~
+
+# Logs
+*.log
+npm-debug.log*

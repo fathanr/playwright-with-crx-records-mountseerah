@@ -54,9 +54,16 @@ If OTP detected in login flow:
 
 ## Credential Extraction
 
-Extract email from record:
-- Find `.fill("email@domain.com")` on email/username field
-- Use as key in `.auth/sessions.json`
+Extract from record:
+- **Email**: Find `.fill("email@domain.com")` on email/username field → Use as key in `.auth/sessions.json`
+- **Login URL**: Extract from `page.goto("https://...")` in recording → Use relative path in auth.setup.ts
+
+Example:
+- Record has: `await page.goto("https://example.com/auth/login")`
+- Extract path: `/auth/login`
+- In auth.setup.ts use: `await page.goto(config.projects[0].use.baseURL + "/auth/login")`
+
+If no explicit goto in record, use default: `await page.goto(config.projects[0].use.baseURL + "/")`
 
 ## Auth Setup Generation
 
@@ -77,6 +84,8 @@ auth.setup.ts must:
    ```
 7. Merge with existing sessions (don't overwrite other credentials)
 8. **ALWAYS ensure `.auth/` directory exists before writing any files**
+9. **Use dynamic baseURL**: `config.projects[0].use.baseURL` + extracted login path from recording
+10. **Never hardcode URLs or paths** - Always extract from recording or use relative paths
 
 ## TTL Check Logic
 

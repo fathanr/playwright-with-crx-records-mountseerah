@@ -2,7 +2,9 @@
 
 ## Overview
 
-Automated smoke test generation from Chrome Extension (CRX) recordings using AI. Supports multi-credential cookie management with TTL validation.
+A boilerplate template for automated smoke test generation from Chrome Extension (CRX) recordings using AI. Supports multi-credential cookie management with TTL validation.
+
+**This is a template/boilerplate** - Clone and customize for your project.
 
 ## Features
 
@@ -64,12 +66,44 @@ cp .env.example .env
 | `USER_PASSWORD` | Your account password       | `your_password`                 |
 | `BASE_URL`      | Application base URL        | `https://pamafix-dev.dot.co.id` |
 
-**Where to get credentials:**
+**Important Notes:**
 
-- Contact your team lead or system administrator for test account credentials
-- For production testing, use your assigned test user account
+- `BASE_URL` is used by Playwright config for all tests
+- Login paths are extracted from recordings (e.g., `/auth/login`)
+- Different projects need different `BASE_URL` values
+- Contact your team lead for test account credentials
+
+**For different projects:**
+
+```bash
+# Project A
+BASE_URL=https://project-a.example.com
+
+# Project B
+BASE_URL=https://project-b.example.com
+```
 
 ## First Run
+
+Before running tests, you need to:
+
+1. **Configure your application**:
+   - Update `BASE_URL` in `.env` to your application URL
+   - Update login path in `tests/auth.setup.ts` (default: `/auth/login`)
+   - Update post-login selector in `tests/smoke/auth/login.spec.ts`
+
+2. **Record your login flow**:
+   ```bash
+   npx playwright codegen $BASE_URL
+   ```
+   - Record your actual login flow
+   - Save to `records-crx/auth/login.record.ts`
+   - Generate Login.page.ts using AI (see "Generating Tests from Recordings")
+
+3. **Run authentication setup**:
+   ```bash
+   npm run smoke
+   ```
 
 On your first test run, authentication will be set up automatically:
 
@@ -120,7 +154,11 @@ Follow this workflow to generate tests from UI recordings:
 Use Playwright Codegen to record your user flow:
 
 ```bash
-npx playwright codegen https://pamafix-dev.dot.co.id
+# Use your BASE_URL from .env
+npx playwright codegen $BASE_URL
+
+# Or specify directly
+npx playwright codegen https://your-project.example.com
 ```
 
 📖 [Learn more about Playwright Codegen](https://playwright.dev/docs/codegen)
@@ -142,13 +180,13 @@ records-crx/master-data/entity/create-entity.record.ts
 
 Open your AI assistant and provide:
 
-1. The content of `docs/AI_MASTER_PROMPT.md`
+1. The content of `command/AI_MASTER_PROMPT.md`
 2. The recording file you just created
 
 Example prompt:
 
 ```
-read the brief in docs/AI_MASTER_PROMPT.md and Generate from: records-crx/master-data/entity/create-entity.record.tsx
+read the brief in command/AI_MASTER_PROMPT.md and Generate from: records-crx/master-data/entity/create-entity.record.tsx
 ```
 
 ### Step 4: Review Output
@@ -243,9 +281,20 @@ npm run setup
 **Solution:**
 
 - Verify recording file format matches Playwright syntax
-- Ensure `docs/AI_MASTER_PROMPT.md` is provided to AI
+- Ensure `command/AI_MASTER_PROMPT.md` is provided to AI
 - Check recording file path follows convention: `records-crx/<path>/<file>.record.ts`
-- Review `docs/AI_CONTRACT.md` for expected output format
+- Review `command/AI_CONTRACT.md` for expected output format
+
+### Critical files deleted
+
+**Problem:** Template broken after deleting files
+
+**Solution:**
+
+- Check `command/CRITICAL_FILES.md` for recovery steps
+- Restore from git: `git checkout -- <file>`
+- If `.auth/` deleted: Will regenerate on next run
+- If `node_modules/` deleted: Run `npm install`
 
 ## Roadmap Plan (Smoke CI Ready)
 
@@ -324,12 +373,16 @@ USER_EMAIL=user@dot.co.id USER_PASSWORD=pass2 npx playwright test
 
 ## Documentation
 
-- `docs/AI_MASTER_PROMPT.md` - AI generation instructions
-- `docs/AI_CONTRACT.md` - Output format contract
-- `docs/AI_EXAMPLE_OUTPUT.md` - Example outputs
-- `docs/AUTH_COOKIES_FLOW.md` - Cookie management flow
-- `docs/AUTH_AND_COOKIES.md` - Session reuse guide
-- `docs/SELECTOR_IMPROVEMENT_SUGGESTIONS.md` - Selector recommendations
+- `README.md` - Main documentation (this file)
+- `STRUCTURE.md` - Project structure overview
+- `command/AI_MASTER_PROMPT.md` - AI generation instructions
+- `command/AI_CONTRACT.md` - Output format contract
+- `command/AI_EXAMPLE_OUTPUT.md` - Example outputs
+- `command/AUTH_COOKIES_FLOW.md` - Cookie management flow
+- `command/AUTH_AND_COOKIES.md` - Session reuse guide
+- `command/SELECTOR_IMPROVEMENT_SUGGESTIONS.md` - Selector recommendations
+- `command/MULTI_PROJECT_SUPPORT.md` - Multi-project configuration guide
+- `command/CRITICAL_FILES.md` - Files and folders that must not be deleted
 
 ## Workflow
 
@@ -346,3 +399,6 @@ USER_EMAIL=user@dot.co.id USER_PASSWORD=pass2 npx playwright test
 - **Folder structure matches record path** - `records-crx/foo/bar.record.ts` → `pages/foo/Bar.page.ts`
 - **Minimal assertions** - At least 2 per test
 - **Prefer data-testid** - Over role/text selectors
+- **Dynamic URLs** - Always use `process.env.BASE_URL`, never hardcode project-specific URLs
+- **Extract login paths** - From recordings, use relative paths in auth.setup.ts
+- **Never delete critical files** - See `command/CRITICAL_FILES.md` for protected files/folders

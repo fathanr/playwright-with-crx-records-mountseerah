@@ -1,4 +1,5 @@
 import { defineConfig, devices } from "@playwright/test";
+import "dotenv/config";
 
 export default defineConfig({
   testDir: "./tests",
@@ -17,7 +18,7 @@ export default defineConfig({
   ],
   globalSetup: "./tests/auth.setup.ts",
   use: {
-    baseURL: "https://pamafix-dev.dot.co.id",
+    baseURL: process.env.BASE_URL,
     storageState: ".auth/user.json",
     trace: "on-first-retry",
     actionTimeout: 15000, // 15s for actions

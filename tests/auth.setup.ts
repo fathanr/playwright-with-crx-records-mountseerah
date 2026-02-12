@@ -19,7 +19,9 @@ async function globalSetup(config: FullConfig) {
     console.log(`[Auth] Logging in as ${email}...`);
     const browser = await chromium.launch();
     const page = await browser.newPage();
-    await page.goto(`${config.projects[0].use.baseURL}/auth/old-login`);
+    
+    // TODO: Update login path based on your application
+    await page.goto(`${config.projects[0].use.baseURL}/auth/login`);
 
     const loginPage = new LoginPage(page);
     await loginPage.login(email, password);
