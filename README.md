@@ -14,6 +14,26 @@ A boilerplate template for automated smoke test generation from Chrome Extension
 - **Smart auth handling**: Auth specs test login, feature specs skip login
 - **Selector suggestions**: AI recommends data-testid improvements
 
+## Quick Start (After Clone)
+
+```bash
+# 1. Install dependencies
+npm install
+
+# 2. Install Playwright browsers
+npm run setup
+
+# 3. Setup environment
+cp .env.example .env
+# Edit .env with your credentials and BASE_URL
+
+# 4. Record your login flow (optional - example provided)
+npx playwright codegen $BASE_URL
+
+# 5. Run tests
+npm run smoke
+```
+
 ## Prerequisites
 
 Before you begin, ensure you have the following installed:
@@ -35,7 +55,7 @@ npm --version
 
 ```bash
 git clone <repository-url>
-cd crx-playwright-with-ai
+cd crx-playwright
 ```
 
 2. Install dependencies:
@@ -384,6 +404,7 @@ USER_EMAIL=user@dot.co.id USER_PASSWORD=pass2 npx playwright test
 ## Documentation
 
 - `README.md` - Main documentation (this file)
+- `GETTING_STARTED.md` - Step-by-step setup guide for first-time users
 - `STRUCTURE.md` - Project structure overview
 - `command/AI_MASTER_PROMPT.md` - AI generation instructions
 - `command/AI_CONTRACT.md` - Output format contract
