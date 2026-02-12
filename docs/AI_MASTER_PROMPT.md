@@ -38,6 +38,20 @@ Detect login flow if record contains ALL:
 
 If detected → generate Login.page.ts + auth.setup.ts
 
+## OTP Detection
+
+Detect OTP flow if record contains:
+- `getByRole("spinbutton", { name: /OTP/i })` or similar OTP input fields
+- Multiple OTP character inputs (e.g., character 1, 2, 3, etc.)
+
+If OTP detected in login flow:
+- Login.page.ts includes `fillOTP()` method
+- auth.setup.ts launches browser in **headless: false** mode
+- auth.setup.ts fills email/password, clicks login, then **waits for manual OTP entry**
+- Use console.log to inform user: "⏳ Waiting for OTP input... Please enter OTP manually in the browser"
+- Wait for post-login element (e.g., dashboard button) with extended timeout (120000ms)
+- Do NOT auto-fill OTP in auth.setup.ts
+
 ## Credential Extraction
 
 Extract email from record:
@@ -48,10 +62,11 @@ Extract email from record:
 
 auth.setup.ts must:
 1. Import "dotenv/config" at top
-2. Load existing `.auth/sessions.json` if exists
-3. Check if `process.env.USER_EMAIL` exists in sessions
-4. If exists → check TTL: parse `cookie.expires` (ISO string), compare with `new Date()`, if any expired → re-login
-5. If not exists or expired → perform login, save to sessions.json with format:
+2. **ALWAYS create `.auth/` directory first using `fs.mkdirSync(path.dirname(sessionsPath), { recursive: true })`**
+3. Load existing `.auth/sessions.json` if exists
+4. Check if `process.env.USER_EMAIL` exists in sessions
+5. If exists → check TTL: parse `cookie.expires` (ISO string), compare with `new Date()`, if any expired → re-login
+6. If not exists or expired → perform login, save to sessions.json with format:
    ```json
    {
      "email@domain.com": {
@@ -60,7 +75,8 @@ auth.setup.ts must:
      }
    }
    ```
-6. Merge with existing sessions (don't overwrite other credentials)
+7. Merge with existing sessions (don't overwrite other credentials)
+8. **ALWAYS ensure `.auth/` directory exists before writing any files**
 
 ## TTL Check Logic
 
