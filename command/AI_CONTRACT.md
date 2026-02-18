@@ -1,7 +1,8 @@
-# CRX AI Output Contract (V2)
+# AI Output Contract
 
-AI MUST output exactly:
+## Output Format (Strict)
 
+```
 --- pages/[<subfolder>/]<FeatureName>.page.ts ---
 (code)
 
@@ -10,37 +11,25 @@ AI MUST output exactly:
 
 --- Selector Improvement Suggestions ---
 (list)
+```
 
-[For auth records with login flow only:]
+**Auth records** (with login flow) add:
+```
 --- pages/auth/Login.page.ts ---
 (code)
+
 --- tests/auth.setup.ts ---
 (code)
 
-Output folder must match record path: if record is records-crx/master-description/search.record.ts, output pages/master-description/Description.page.ts and tests/smoke/master-description/description.spec.ts. Imports in spec must use correct relative path to pages/ (do not import LoginPage; auth is global).
+--- tests/smoke/auth/login.spec.ts ---
+(code)
+```
 
-Rules:
+## Rules
 
-- Standard output: 3 sections (page, spec, suggestions). Auth records with login: add Login.page.ts and auth.setup.ts.
-- No explanation
-- Feature page excludes login
-- Smoke spec does NOT call login: start with await page.goto("/"); (session from global setup / storageState)
-- Do not import LoginPage in generated specs
-
-## Cookie & Session Management
-
-Auth setup rules:
-- Import "dotenv/config" at top
-- Use process.env.USER_EMAIL, process.env.USER_PASSWORD
-- Save storageState to `.auth/sessions.json` with format: `{ "email": { "cookies": [...], "origins": [...] } }`
-- Check TTL: parse cookie.expires field, if any cookie expired → re-login and re-save
-- If sessions.json exists and credential matches and cookies not expired → skip login
-
-Auth spec rules (for testing login flow itself):
-- Load cookies from `.auth/sessions.json` based on process.env.USER_EMAIL
-- Inject cookies manually: `await context.addCookies(sessions[email].cookies)`
-- Then navigate: `await page.goto("/")`
-
-Non-auth spec rules (feature tests):
-- Use global storageState (unchanged behavior)
-- Start with `await page.goto("/")`
+- Folder structure matches record path
+- Feature page excludes login logic
+- Smoke spec starts with `await page.goto("/")` (no login call)
+- Do NOT import LoginPage in generated specs
+- Minimum 2 assertions per test
+- Prefer data-testid selectors
