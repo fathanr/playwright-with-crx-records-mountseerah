@@ -19,7 +19,7 @@ async function globalSetup(config: FullConfig) {
     console.log(`[Auth] Logging in as ${email}...`);
     const browser = await chromium.launch();
     const page = await browser.newPage();
-    
+
     // TODO: Update login path based on your application
     await page.goto(`${config.projects[0].use.baseURL}/auth/login`);
 
@@ -46,7 +46,7 @@ async function globalSetup(config: FullConfig) {
 function isSessionExpired(session: { cookies: any[] }) {
   if (!session?.cookies) return true;
   const now = new Date();
-  return session.cookies.some(cookie => {
+  return session.cookies.some((cookie) => {
     if (!cookie.expires || cookie.expires === -1) return false;
     return new Date(cookie.expires * 1000) < now;
   });

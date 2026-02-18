@@ -21,6 +21,21 @@ export class LoginPage {
     );
   }
 
+  get errorMessage() {
+    return this.page.getByTestId("error-message").or(
+      this.page.getByRole("alert").or(
+        this.page.locator(".error-message, .alert, [data-testid*='error']")
+      )
+    );
+  }
+
+  async getErrorMessage(): Promise<string> {
+    if (await this.errorMessage.count() > 0) {
+      return await this.errorMessage.textContent() || "";
+    }
+    return "";
+  }
+
   async login(email: string, password: string) {
     await this.emailInput.fill(email);
     await this.passwordInput.fill(password);

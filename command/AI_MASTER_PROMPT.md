@@ -127,6 +127,20 @@ If record contains login flow (password field + fill + submit button):
 - Generate auth.setup.ts with multi-credential support
 - Auth spec uses manual cookie injection from `.auth/sessions.json`
 
+## Reference Test Cases
+
+Use test cases in `reference/` folder as patterns for generating new tests:
+
+- `reference/auth/login.spec.ts` - Auth flow pattern (5 test cases)
+- `reference/user-management/create-user.spec.ts` - CRUD pattern (3 test cases)
+
+When generating new test specs, follow the same structure:
+- Use `test.describe` for grouping
+- Add `test.beforeEach` for session setup
+- Use TC01, TC02, TC03... naming convention
+- Minimum 2 assertions per test
+- Use page object locators for assertions
+
 ## Output Sections
 
 **Standard (non-auth) record:**
