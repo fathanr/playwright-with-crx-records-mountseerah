@@ -32,14 +32,36 @@ Rules:
 - Prefer data-testid selectors
 - Avoid success message assertions - use stable UI elements that remain visible after operations
 
-## Login Flow Detection
+## Login Flow Detection (CRITICAL)
 
-Detect login flow if record contains ALL:
-- `getByRole("textbox", { name: /password/i })` or similar password field
-- `.fill()` action on password field
-- `getByRole("button", { name: /login/i })` or similar submit button
+### Scan ENTIRE Record
+You MUST scan the ENTIRE record file for login detection, NOT just the beginning. Login can appear ANYWHERE in the record.
 
-If detected → generate Login.page.ts + auth.setup.ts
+### Detection Rules
+Login is detected if record contains ANY of these patterns:
+1. **Email + Password + Button**: `.getByRole("textbox", { name: /email/i })` + `.fill()` on password + login button
+2. **Credentials in fill**: Any `.fill("email@domain.com")` or `.fill("password123")` patterns
+3. **Login URL**: `page.goto(".../login")` or `page.goto(".../auth/...")`
+
+### When Login Detected in ANY Record
+If login is detected (even in a feature record like "create-competition"):
+1. **ALWAYS generate** `pages/auth/Login.page.ts`
+2. **ALWAYS generate** `tests/auth.setup.ts` with multi-credential support
+3. **REMOVE all login steps** from the feature spec (do NOT include login in feature test)
+4. Feature spec should start with: `await page.goto("/")` - session comes from global setup
+
+### Multi-Credential Support
+- Extract email from record as KEY for sessions.json
+- Use `process.env.USER_EMAIL` to select which credential to use
+- Check sessions.json for existing session first
+- Only perform login if session doesn't exist or is expired
+- Support multiple credentials stored in sessions.json:
+  ```json
+  {
+    "admin@domain.com": { "cookies": [...], "origins": [...] },
+    "user@domain.com": { "cookies": [...], "origins": [...] }
+  }
+  ```
 
 ## OTP Detection
 
@@ -57,9 +79,19 @@ If OTP detected in login flow:
 
 ## Credential Extraction
 
+Extract credentials from record to use as KEY in sessions.json:
+- **Email**: Find `.fill("email@domain.com")` on email/username field → Use as KEY (e.g., "seerah@albirr.com")
+- **Password**: Find `.fill("password123")` on password field
+
+**IMPORTANT**: Replace actual credentials in generated code with:
+- Email: `process.env.USER_EMAIL`
+- Password: `process.env.USER_PASSWORD`
+
+The extracted email from record is used as the KEY in sessions.json to track which user owns which session.
+
+### Login URL Extraction
 Extract from record:
-- **Email**: Find `.fill("email@domain.com")` on email/username field → Use as key in `.auth/sessions.json` (REPLACE actual email with process.env.USER_EMAIL - do NOT include real credentials)
-- **Login URL**: Extract from `page.goto("https://...")` in recording → Use relative path in auth.setup.ts
+- **Login URL**: Find `page.goto("https://...")` that contains "/login" or "/auth" → Use as login path
 
 Example:
 - Record has: `await page.goto("https://example.com/auth/login")`
@@ -123,13 +155,6 @@ Folder structure must match the record file path:
 
 Use correct relative imports in the spec (e.g. ../../pages/ for root, ../../../pages/ or ../../../pages/<subfolder>/ for one level down).
 
-## Login Flow Detection
-
-If record contains login flow (password field + fill + submit button):
-- Generate Login.page.ts
-- Generate auth.setup.ts with multi-credential support
-- Auth spec uses manual cookie injection from `.auth/sessions.json`
-
 ## Reference Test Cases
 
 Use test cases in `reference/` folder as patterns for generating new tests:
@@ -146,28 +171,28 @@ When generating new test specs, follow the same structure:
 
 ## Output Sections
 
-**Standard (non-auth) record:**
+**Standard (non-auth) record (NO login detected):**
 ```
 --- pages/[<subfolder>/]<FeatureName>.page.ts ---
 (code)
 
 --- tests/smoke/[<subfolder>/]<feature-name>.spec.ts ---
-(code)
+(code with login steps included)
 
 --- Selector Improvement Suggestions ---
 (list)
 ```
 
-**Auth record (with login flow):**
+**Auth record OR Feature record with login (login detected):**
 ```
 --- pages/auth/Login.page.ts ---
 (code)
 
 --- tests/auth.setup.ts ---
-(code with sessions.json support + TTL check)
+(code with sessions.json support + TTL check + multi-credential)
 
---- tests/smoke/auth/login.spec.ts ---
-(code with manual cookie injection)
+--- tests/smoke/[<subfolder>/]<feature-name>.spec.ts ---
+(code WITHOUT login steps - session comes from global setup)
 
 --- Selector Improvement Suggestions ---
 (list)
