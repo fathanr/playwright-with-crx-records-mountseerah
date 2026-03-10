@@ -20,8 +20,8 @@ async function globalSetup(config: FullConfig) {
     const browser = await chromium.launch();
     const page = await browser.newPage();
 
-    // TODO: Update login path based on your application
-    await page.goto(`${config.projects[0].use.baseURL}/auth/login`);
+    // Login path from record: https://mountserrah-backoffice.codespace.id/login
+    await page.goto(`${config.projects[0].use.baseURL}/login`);
 
     const loginPage = new LoginPage(page);
     await loginPage.login(email, password);

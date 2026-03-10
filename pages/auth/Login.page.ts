@@ -17,7 +17,7 @@ export class LoginPage {
 
   get loginButton() {
     return this.page.getByTestId("login-button").or(
-      this.page.getByRole("button", { name: /login|sign in/i })
+      this.page.getByRole("button", { name: /log in|sign in/i })
     );
   }
 
@@ -42,6 +42,6 @@ export class LoginPage {
     await this.loginButton.click();
     
     // Wait for navigation away from login page
-    await this.page.waitForURL(url => !url.toString().includes('/auth/'), { timeout: 30000 });
+    await this.page.waitForURL(url => !url.toString().includes('/login'), { timeout: 30000 });
   }
 }

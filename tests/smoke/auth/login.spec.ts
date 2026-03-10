@@ -6,7 +6,7 @@ import { TEST_USERS, ERROR_MESSAGES } from "../../../utils/testData";
 /**
  * Login Test Suite
  * Adapted from learn-pw pattern with Arrange/Act/Assert structure
- * 
+ *
  * Test Cases:
  * 1. Valid login - session is valid, user logged in
  * 2. Invalid email - error message shown
@@ -22,7 +22,7 @@ test.describe("Login @smoke", () => {
   test.beforeEach(async ({ page, context }) => {
     const sessionsPath = ".auth/sessions.json";
     const email = process.env.USER_EMAIL || TEST_USERS.VALID.email;
-    
+
     if (fs.existsSync(sessionsPath)) {
       const sessions = JSON.parse(fs.readFileSync(sessionsPath, "utf-8"));
       if (sessions[email]?.cookies) {
@@ -38,10 +38,10 @@ test.describe("Login @smoke", () => {
   test("TC01: should verify login session is valid", async ({ page }) => {
     // Arrange
     const loginPage = new LoginPage(page);
-    
+
     // Act
     await page.goto("/");
-    
+
     // Assert
     await expect(page).not.toHaveURL(/\/auth\/login/);
     await expect(page.locator('[data-testid="user-menu"]')).toBeVisible();
@@ -54,15 +54,18 @@ test.describe("Login @smoke", () => {
   test("TC02: should show error with invalid email", async ({ page }) => {
     // Arrange
     const loginPage = new LoginPage(page);
-    
+
     // Act
     await page.goto("/auth/login");
-    await loginPage.login(TEST_USERS.INVALID_EMAIL.email, TEST_USERS.INVALID_EMAIL.password);
-    
+    await loginPage.login(
+      TEST_USERS.INVALID_EMAIL.email,
+      TEST_USERS.INVALID_EMAIL.password,
+    );
+    3;
     // Assert
     const errorMessage = await loginPage.getErrorMessage();
     expect(errorMessage).toMatch(ERROR_MESSAGES.INVALID_CREDENTIALS);
-    expect(page.url()).toContain('/auth/login');
+    expect(page.url()).toContain("/auth/login");
   });
 
   /**
@@ -72,15 +75,18 @@ test.describe("Login @smoke", () => {
   test("TC03: should show error with invalid password", async ({ page }) => {
     // Arrange
     const loginPage = new LoginPage(page);
-    
+
     // Act
     await page.goto("/auth/login");
-    await loginPage.login(TEST_USERS.INVALID_PASSWORD.email, TEST_USERS.INVALID_PASSWORD.password);
-    
+    await loginPage.login(
+      TEST_USERS.INVALID_PASSWORD.email,
+      TEST_USERS.INVALID_PASSWORD.password,
+    );
+
     // Assert
     const errorMessage = await loginPage.getErrorMessage();
     expect(errorMessage).toMatch(ERROR_MESSAGES.INVALID_CREDENTIALS);
-    expect(page.url()).toContain('/auth/login');
+    expect(page.url()).toContain("/auth/login");
   });
 
   /**
@@ -90,11 +96,14 @@ test.describe("Login @smoke", () => {
   test("TC04: should show error when email is empty", async ({ page }) => {
     // Arrange
     const loginPage = new LoginPage(page);
-    
+
     // Act
     await page.goto("/auth/login");
-    await loginPage.login(TEST_USERS.EMPTY_EMAIL.email, TEST_USERS.EMPTY_EMAIL.password);
-    
+    await loginPage.login(
+      TEST_USERS.EMPTY_EMAIL.email,
+      TEST_USERS.EMPTY_EMAIL.password,
+    );
+
     // Assert
     const errorMessage = await loginPage.getErrorMessage();
     expect(errorMessage).toMatch(ERROR_MESSAGES.EMPTY_EMAIL);
@@ -107,11 +116,14 @@ test.describe("Login @smoke", () => {
   test("TC05: should show error when password is empty", async ({ page }) => {
     // Arrange
     const loginPage = new LoginPage(page);
-    
+
     // Act
     await page.goto("/auth/login");
-    await loginPage.login(TEST_USERS.EMPTY_PASSWORD.email, TEST_USERS.EMPTY_PASSWORD.password);
-    
+    await loginPage.login(
+      TEST_USERS.EMPTY_PASSWORD.email,
+      TEST_USERS.EMPTY_PASSWORD.password,
+    );
+
     // Assert
     const errorMessage = await loginPage.getErrorMessage();
     expect(errorMessage).toMatch(ERROR_MESSAGES.EMPTY_PASSWORD);
@@ -124,10 +136,10 @@ test.describe("Login @smoke", () => {
   test("TC06: should have enabled login button", async ({ page }) => {
     // Arrange
     const loginPage = new LoginPage(page);
-    
+
     // Act
     await page.goto("/auth/login");
-    
+
     // Assert
     await expect(loginPage.loginButton).toBeEnabled();
     await expect(loginPage.loginButton).toBeVisible();
@@ -140,10 +152,10 @@ test.describe("Login @smoke", () => {
   test("TC07: should display all login form elements", async ({ page }) => {
     // Arrange
     const loginPage = new LoginPage(page);
-    
+
     // Act
     await page.goto("/auth/login");
-    
+
     // Assert
     await expect(loginPage.emailInput).toBeVisible();
     await expect(loginPage.passwordInput).toBeVisible();

@@ -12,6 +12,9 @@ playwright/.cache/
 # Auth sessions
 .auth/
 
+# API responses (test artifacts)
+tests/api-responses/
+
 # OS
 .DS_Store
 Thumbs.db
