@@ -12,13 +12,49 @@ Convert a Playwright recorded script into:
 3. Selector Improvement Suggestions
 4. Auth Setup (if login flow detected)
 
-## Pre-Generation Check
+## Pre-Generation Check (CRITICAL)
 
 Before generating files, ALWAYS check if target files already exist:
 - Check if Page Object file exists at expected path
 - Check if Smoke Test file exists at expected path
-- If files exist, inform user and ask for confirmation to overwrite
-- If files don't exist, proceed with generation
+- Check if Login.page.ts exists (for auth records)
+
+### If Files DON'T Exist (First Generation)
+Proceed with full generation as normal.
+
+### If Files EXIST (Update Mode)
+If generated files already exist, you MUST:
+
+1. **READ existing files first:**
+   - Read the existing Page Object file
+   - Read the existing Spec file
+   - Understand current structure and methods
+
+2. **COMPARE record with existing code:**
+   - Identify NEW actions/fields in record that don't exist in page object
+   - Identify REMOVED actions/fields that exist in page object but not in record
+   - Identify CHANGED selectors or flows
+   - Note: Don't assume all old code is wrong - keep existing working methods
+
+3. **UPDATE instead of overwrite:**
+   - Add NEW methods to page object for new actions
+   - Add NEW test cases for new functionality
+   - Update EXISTING methods if selector/flow changed
+   - Keep existing working code intact
+   - Remove methods that are no longer in the record (mark as deprecated or remove)
+
+4. **Generate DIFF summary:**
+   Show what changed:
+   ```
+   ## Changes Summary
+   + Added: [new methods/fields]
+   ~ Modified: [changed methods]
+   - Removed: [deprecated methods]
+   ```
+
+5. **Keep auth.setup.ts stable:**
+   - Only update if login flow changed
+   - Don't regenerate sessions.json unless necessary
 
 Rules:
 
