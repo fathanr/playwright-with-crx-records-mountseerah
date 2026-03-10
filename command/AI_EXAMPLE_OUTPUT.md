@@ -41,12 +41,12 @@ await expect(page.getByRole("textbox", { name: "Search" })).toHaveValue("301");
 When record is records-crx/auth/login.record.ts with:
 ```typescript
 await page.goto("https://example.com/auth/old-login");
-await page.getByRole("textbox", { name: "Email" }).fill("admin@example.com");
+await page.getByRole("textbox", { name: "Email" }).fill(process.env.USER_EMAIL);
 ```
 
 Extract:
 - Login path: `/auth/old-login`
-- Email: `admin@example.com`
+- Email: (extract from process.env.USER_EMAIL in auth.setup.ts)
 
 --- pages/auth/Login.page.ts ---
 import type { Page } from "@playwright/test";
@@ -160,13 +160,13 @@ await context.close();
 When record is records-crx/auth/login-with-otp.record.ts with:
 ```typescript
 await page.goto("https://example.com/auth/login");
-await page.getByRole("textbox", { name: "Email" }).fill("user@example.com");
+await page.getByRole("textbox", { name: "Email" }).fill(process.env.USER_EMAIL);
 await page.getByRole("spinbutton", { name: "character 1" }).fill("1");
 ```
 
 Extract:
 - Login path: `/auth/login`
-- Email: `user@example.com`
+- Email: (extract from process.env.USER_EMAIL in auth.setup.ts)
 - OTP detected: Yes (spinbutton fields present)
 
 --- pages/auth/Login.page.ts ---

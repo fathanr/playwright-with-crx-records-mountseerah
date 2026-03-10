@@ -22,6 +22,9 @@ Before generating files, ALWAYS check if target files already exist:
 
 Rules:
 
+- NEVER include actual credentials in generated code. If recording contains
+  credentials (e.g., .fill("real@email.com")), replace with empty string or
+  process.env references. Credentials must ONLY come from environment variables.
 - Auth is global: do NOT call LoginPage or login.login() in generated specs. Session is saved once in global setup (tests/auth.setup.ts) and loaded via storageState. In each spec start with: await page.goto("/");
 - Remove redundant click() before fill()
 - Credentials only in Login.page.ts and auth setup. Specs do not use credentials or import LoginPage.
@@ -55,7 +58,7 @@ If OTP detected in login flow:
 ## Credential Extraction
 
 Extract from record:
-- **Email**: Find `.fill("email@domain.com")` on email/username field → Use as key in `.auth/sessions.json`
+- **Email**: Find `.fill("email@domain.com")` on email/username field → Use as key in `.auth/sessions.json` (REPLACE actual email with process.env.USER_EMAIL - do NOT include real credentials)
 - **Login URL**: Extract from `page.goto("https://...")` in recording → Use relative path in auth.setup.ts
 
 Example:
@@ -172,3 +175,118 @@ When generating new test specs, follow the same structure:
 
 USER COMMAND:
 Generate from: records-crx/<path>/<file>.record.ts
+
+## Test Case Requirements
+
+Learn from the recorded script to identify all form elements, buttons, and interactions. Generate comprehensive test cases including:
+
+### Input Fields (Text, Number, Email, Password, Textarea)
+- **Positive Cases**:
+  - Valid input (normal text)
+  - Input with numbers
+  - Input with special characters
+  - Input with spaces
+  - Maximum character input
+  - Minimum character input (1 character)
+  - Input with Unicode characters
+  - Input with leading/trailing spaces (check if trimmed)
+- **Negative Cases**:
+  - Empty field (required validation)
+  - Input only whitespace
+  - Input exceeds maximum character limit
+  - Input special characters that might cause XSS
+  - Input SQL injection patterns
+  - Input invalid email format (if email field)
+  - Input invalid URL format (if URL field)
+
+### Image/File Upload
+- **Positive Cases**:
+  - Upload valid image file (JPEG, PNG)
+  - Upload valid file format as per requirements
+  - Upload file with correct aspect ratio/size
+- **Negative Cases**:
+  - Upload invalid file type (PDF, TXT, wrong extension)
+  - Upload oversized file
+  - Upload corrupted file
+  - No file uploaded (required field validation)
+
+### Rich Text Editor (.ql-editor or similar)
+- **Positive Cases**:
+  - Input plain text
+  - Input text with newlines
+  - Apply bold formatting
+  - Apply italic formatting
+  - Apply underline formatting
+  - Apply strikethrough formatting
+  - Change background color
+  - Change text color
+  - Increase indent
+  - Decrease indent
+  - Align text (left, center, justify, right)
+  - Bullet list
+  - Ordered list
+  - Combine multiple formatting
+  - Input special characters
+  - Input Unicode characters (emojis)
+- **Negative Cases**:
+  - Input empty content
+  - Input maximum character limit
+  - Input script tags (XSS prevention)
+  - Input HTML tags
+  - Input SQL injection patterns
+
+### Date/Time Pickers
+- **Positive Cases**:
+  - Select valid date
+  - Select valid date range
+  - Select future date
+  - Select past date (if allowed)
+  - Select current date
+- **Negative Cases**:
+  - No date selected (required validation)
+  - Invalid date format
+  - Past date selection (if not allowed)
+  - End date before start date
+
+### Dropdown/Select
+- **Positive Cases**:
+  - Select valid option by visible text
+  - Select valid option by value
+  - Select default option
+- **Negative Cases**:
+  - No option selected (required validation)
+  - Select disabled option
+  - Select invalid option
+
+### Checkbox/Radio Button
+- **Positive Cases**:
+  - Check checkbox
+  - Uncheck checkbox
+  - Select radio button
+- **Negative Cases**:
+  - No selection (required validation)
+
+### Buttons (Submit, Cancel, Delete, etc.)
+- **Positive Cases**:
+  - Click primary action button
+  - Click secondary action button
+- **Negative Cases**:
+  - Click button without required fields
+  - Click button with invalid data
+  - Double-click prevention
+
+### Form Submission
+- **Positive Cases**:
+  - Submit with all valid data
+  - Submit with minimal required fields
+- **Negative Cases**:
+  - Submit without required fields
+  - Submit with invalid data
+  - Submit with validation errors
+
+### Additional Test Scenarios (based on page functionality)
+- Navigate away without saving (unsaved changes prompt)
+- Session timeout handling
+- Concurrent edit handling
+- API error handling
+- Network failure handling
