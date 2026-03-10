@@ -62,11 +62,42 @@ Rules:
   credentials (e.g., .fill("real@email.com")), replace with empty string or
   process.env references. Credentials must ONLY come from environment variables.
 - Auth is global: do NOT call LoginPage or login.login() in generated specs. Session is saved once in global setup (tests/auth.setup.ts) and loaded via storageState. In each spec start with: await page.goto("/");
-- Remove redundant click() before fill()
 - Credentials only in Login.page.ts and auth setup. Specs do not use credentials or import LoginPage.
 - Add at least 2 assertions using stable visible elements (prefer page object locators over text-based assertions)
 - Prefer data-testid selectors
 - Avoid success message assertions - use stable UI elements that remain visible after operations
+
+## Redundancy Detection & Cleanup
+
+When generating code from record, CLEAN UP redundant patterns:
+
+1. **Redundant clicks:**
+   - `.click().click().click()` → 1x `.click()`
+   - `.click()` immediately followed by same element `.click()` → keep only 1
+
+2. **Redundant fills:**
+   - `.fill("x").fill("y")` → only keep `.fill("y")` (last value wins)
+
+3. **Redundant navigation:**
+   - Multiple `goto()` to same URL → keep only the last one
+   - `goto("/")` then immediately `goto("/")` → remove first
+
+4. **Unnecessary actions:**
+   - Click on element then fill same element → keep only `.fill()`
+   - Focus/hover actions that don't affect state → remove
+
+5. **Debug/console from recording:**
+   - Remove any `console.log`, `// comment` that came from recording
+   - Remove `.waitFor()` if not strictly necessary (Playwright auto-waits)
+
+6. **Consolidate similar actions:**
+   - Multiple `.getByRole()` for same element → use one locator
+
+Example:
+```
+Record: await box.click(); await box.click(); await box.fill("test");
+Output: await box.fill("test");  // cleaned
+```
 
 ## Login Flow Detection (CRITICAL)
 
