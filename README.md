@@ -117,18 +117,14 @@ BASE_URL=https://project-b.example.com
 
 Before running tests, you need to:
 
-1. **Configure your application**:
+1. **Configure your environment**:
    - Update `BASE_URL` in `.env` to your application URL
-   - Update login path in `tests/auth.setup.ts` (default: `/auth/login`)
-   - Update post-login selector in `tests/smoke/auth/login.spec.ts`
+   - Update credentials in `.env`
 
-2. **Record your login flow**:
-   ```bash
-   npx playwright codegen $BASE_URL
-   ```
-   - Record your actual login flow
+2. **Generate auth setup**:
+   - Record login flow: `npx playwright codegen $BASE_URL`
    - Save to `records-crx/auth/login.record.ts`
-   - Generate Login.page.ts using AI (see "Generating Tests from Recordings")
+   - Generate using AI (see "Generating Tests from Recordings")
 
 3. **Run authentication setup**:
    ```bash
@@ -208,15 +204,25 @@ records-crx/master-data/entity/create-entity.record.ts
 
 ### Step 3: Call AI Prompt
 
-Open your AI assistant and provide:
+Open your AI assistant and provide these files:
 
-1. The content of `command/AI_MASTER_PROMPT.md`
-2. The recording file you just created
+1. **AI_MASTER_PROMPT.md** - Copy content from `command/AI_MASTER_PROMPT.md`
+2. **AI_EXAMPLE_OUTPUT.md** - Copy content from `command/AI_EXAMPLE_OUTPUT.md`
+3. **Your recording file** - The file you created in Step 2
 
-Example prompt:
+Example prompt to AI:
 
 ```
-read the brief in command/AI_MASTER_PROMPT.md and Generate from: records-crx/master-data/entity/create-entity.record.tsx
+I need you to generate Playwright automation from my recording.
+
+First, read and understand these instructions:
+[Paste AI_MASTER_PROMPT.md content here]
+
+Then review this example:
+[Paste AI_EXAMPLE_OUTPUT.md content here]
+
+Now generate from this recording:
+[records-crx/path/to/your/record.file.ts]
 ```
 
 ### Step 4: Review Output
@@ -311,9 +317,8 @@ npm run setup
 **Solution:**
 
 - Verify recording file format matches Playwright syntax
-- Ensure `command/AI_MASTER_PROMPT.md` is provided to AI
+- Ensure BOTH `command/AI_MASTER_PROMPT.md` AND `command/AI_EXAMPLE_OUTPUT.md` are provided to AI
 - Check recording file path follows convention: `records-crx/<path>/<file>.record.ts`
-- Review `command/AI_CONTRACT.md` for expected output format
 
 ### Critical files deleted
 
@@ -406,19 +411,18 @@ USER_EMAIL=user@dot.co.id USER_PASSWORD=pass2 npx playwright test
 - `README.md` - Main documentation (this file)
 - `GETTING_STARTED.md` - Step-by-step setup guide for first-time users
 - `STRUCTURE.md` - Project structure overview
-- `command/AI_MASTER_PROMPT.md` - AI generation instructions
-- `command/AI_CONTRACT.md` - Output format contract
+- `command/AI_MASTER_PROMPT.md` - AI generation instructions (182 lines, all-in-one)
 - `command/AI_EXAMPLE_OUTPUT.md` - Example outputs
-- `command/AUTH_COOKIES_FLOW.md` - Cookie management flow
-- `command/AUTH_AND_COOKIES.md` - Session reuse guide
-- `command/SELECTOR_IMPROVEMENT_SUGGESTIONS.md` - Selector recommendations
-- `command/MULTI_PROJECT_SUPPORT.md` - Multi-project configuration guide
+- `command/SELECTORS.md` - Selector strategy guide
 - `command/CRITICAL_FILES.md` - Files and folders that must not be deleted
 
 ## Workflow
 
 1. **Record** - Use Playwright Codegen to record flow → save to `records-crx/`
-2. **Generate** - AI detects login flow → generates Page Object + Spec + auth.setup.ts just call command AI file `AI_MASTER_PROMPT.md` and call file `record`
+2. **Generate** - Provide AI with:
+   - `command/AI_MASTER_PROMPT.md`
+   - `command/AI_EXAMPLE_OUTPUT.md`
+   - Your recording file
 3. **Review** - Quick review ≤ 5 minutes
 4. **Run** - `npx playwright test --grep @smoke`
 5. **Commit** - Push to repo, CI runs smoke tests
